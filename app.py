@@ -6,6 +6,9 @@ from transcript_processor import parse_transcript
 from memory_store import store_meeting, get_open_action_items, mark_action_complete, get_stats
 from agent import ask
 from gmail_client import fetch_meeting_transcripts, is_authenticated
+import socket
+
+is_local = socket.gethostname() != "streamlit"
 
 st.set_page_config(page_title="Meeting Memory Agent", layout="wide")
 
@@ -38,33 +41,35 @@ with st.sidebar:
                     st.success(f"Indexed: {meeting.title} ({count} chunks)")
                     st.rerun()
 
-    st.divider()
-
     # Gmail integration
-    st.subheader("Gmail Integration")
+    if is_local:
+        st.divider()
+        st.subheader("Gmail Integration")
 
-    if is_authenticated():
-        st.success("Gmail connected")
-        if st.button("Fetch Meeting Transcripts"):
-            with st.spinner("Fetching from Gmail..."):
-                transcripts = fetch_meeting_transcripts(max_results=10)
-                if not transcripts:
-                    st.warning("No meeting transcripts found in Gmail.")
-                else:
-                    indexed = 0
-                    for t in transcripts:
-                        meeting = parse_transcript(t["body"], meeting_date=t["date"][:10])
-                        store_meeting(meeting)
-                        indexed += 1
-                    st.success(f"Indexed {indexed} meetings from Gmail.")
+        if is_authenticated():
+            st.success("Gmail connected")
+            if st.button("Fetch Meeting Transcripts"):
+                with st.spinner("Fetching from Gmail..."):
+                    transcripts = fetch_meeting_transcripts(max_results=10)
+                    if not transcripts:
+                        st.warning("No meeting transcripts found in Gmail.")
+                    else:
+                        indexed = 0
+                        for t in transcripts:
+                            meeting = parse_transcript(t["body"], meeting_date=t["date"][:10])
+                            store_meeting(meeting)
+                            indexed += 1
+                        st.success(f"Indexed {indexed} meetings from Gmail.")
+                        st.rerun()
+        else:
+            st.info("Connect Gmail to auto-fetch meeting transcripts.")
+            if st.button("Connect Gmail"):
+                with st.spinner("Opening browser for authentication..."):
+                    from gmail_client import get_gmail_service
+                    get_gmail_service()
                     st.rerun()
     else:
-        st.info("Connect Gmail to auto-fetch meeting transcripts.")
-        if st.button("Connect Gmail"):
-            with st.spinner("Opening browser for authentication..."):
-                from gmail_client import get_gmail_service
-                get_gmail_service()
-                st.rerun()
+        st.info("Gmail integration available in self-hosted version.")
 
     st.divider()
 
