@@ -4,7 +4,9 @@ A RAG-based AI assistant that indexes Google Meet transcripts and lets you query
 
 ![Python](https://img.shields.io/badge/python-3.12+-blue) ![LangChain](https://img.shields.io/badge/LangChain-1.2+-green) ![Streamlit](https://img.shields.io/badge/Streamlit-1.56+-red)
 
-**[Live Demo](#)**
+![Demo](assets/demo.png)
+
+**[Live Demo](https://meeting-memory-agent.streamlit.app)**
 
 ## Features
 
