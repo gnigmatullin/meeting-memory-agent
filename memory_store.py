@@ -3,7 +3,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 import chromadb
 import os
-from chromadb.utils.embedding_functions import GoogleGeminiEmbeddingFunction
+from chromadb.utils.embedding_functions import CohereEmbeddingFunction
 
 from transcript_processor import MeetingData, ActionItem, transcript_to_chunks
 
@@ -18,8 +18,9 @@ def get_client(persist_dir: str = "./chroma_db") -> chromadb.PersistentClient:
 
 
 def get_ef():
-    return GoogleGeminiEmbeddingFunction(
-        api_key_env_var="GOOGLE_API_KEY"
+    return CohereEmbeddingFunction(
+        api_key=os.getenv("COHERE_API_KEY"),
+        model_name="embed-english-light-v3.0"
     )
 
 
