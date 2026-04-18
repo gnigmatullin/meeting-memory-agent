@@ -6,9 +6,11 @@ from transcript_processor import parse_transcript
 from memory_store import store_meeting, get_open_action_items, mark_action_complete, get_stats
 from agent import ask
 from gmail_client import fetch_meeting_transcripts, is_authenticated
-import socket
+from dotenv import load_dotenv
 
-is_local = socket.gethostname() != "streamlit"
+load_dotenv()
+
+is_local = os.getenv("ENV") == "local"
 
 st.set_page_config(page_title="Meeting Memory Agent", layout="wide")
 
